@@ -30,3 +30,6 @@ This web application utilizes the ISRO Stats RESTful API to display launch histo
 
 ## Documentation
 The web application uses Chart.js for rendering graphs. The API endpoint is expected to return JSON data in a specific format. Adjust the Chart.js configurations in `index.html` based on the structure of the ISRO Stats API response.
+
+## Screenshots:
+Please refer to the following Google Drive link to access screenshots and a demo video of the application: https://drive.google.com/file/d/1rqVs6zPlZIPSL-iWzfCcRnjdD7I96gOR/view?usp=drive_link
