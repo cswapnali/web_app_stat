@@ -1,6 +1,6 @@
 # web_app_stat
 
-This web application utilizes the ISRO Stats RESTful API to display launch history statistics in graphical format.
+This web application utilizes the ISRO Stats RESTful API to display launch history statistics in a graphical format.
 
 ## Features
 1. **Launches History - Per Year**: Stacked bar graph showing the year vs mission status (unsuccessful and successful).
