@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ISRO Stats</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        h1 {
+            text-align: left;
+        }
+
+        div {
+            width: 50%;
+            text-align: left;
+        }
+
+        canvas {
+            width: 100%;
+            margin: auto;
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <h1>ISRO Stats</h1>
+
+    <div>
+        <h2>Launches History - Per Year</h2>
+        <canvas id="yearlyChart"></canvas>
+    </div>
+
+    <div>
+        <h2>Launches History - Per Rocket</h2>
+        <canvas id="rocketChart"></canvas>
+    </div>
+
+    <div>
+        <h2>Launches History - Overall Success Rate</h2>
+        <canvas id="successRateChart"></canvas>
+    </div>
+
+    <script>
+        fetch('/data')
+            .then(response => response.json())
+            .then(data => {
+                
+                const years = {};
+                const rockets = {};
+                let successfulCount = 0;
+                let unsuccessfulCount = 0;
+
+                data.forEach(entry => {
+                    const launchYear = new Date(entry.LaunchDate).getFullYear();
+                    if (!years[launchYear]) {
+                        years[launchYear] = { successful: 0, unsuccessful: 0 };
+                    }
+                    if (entry.MissionStatus === 'MISSION SUCCESSFUL') {
+                        years[launchYear].successful++;
+                    } else {
+                        years[launchYear].unsuccessful++;
+                    }
+
+                    const rocketType = entry.LaunchType;
+                    if (!rockets[rocketType]) {
+                        rockets[rocketType] = 0;
+                    }
+                    rockets[rocketType]++;
+                    
+                    if (entry.MissionStatus === 'MISSION SUCCESSFUL') {
+                        successfulCount++;
+                    } else {
+                        unsuccessfulCount++;
+                    }
+                });
+
+                createYearlyChart(years);
+                createRocketChart(rockets);
+                createSuccessRateChart(successfulCount, unsuccessfulCount);
+            });
+
+        function createYearlyChart(yearsData) {
+            const ctx = document.getElementById('yearlyChart').getContext('2d');
+            const yearsChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: Object.keys(yearsData),
+                    datasets: [
+                        {
+                            label: 'Successful',
+                            data: Object.values(yearsData).map(year => year.successful),
+                            backgroundColor: 'green'
+                        },
+                        {
+                            label: 'Unsuccessful',
+                            data: Object.values(yearsData).map(year => year.unsuccessful),
+                            backgroundColor: 'red'
+                        }
+                    ]
+                },
+                options: {
+                    scales: {
+                        x: { stacked: true },
+                        y: { stacked: true }
+                    }
+                }
+            });
+        }
+
+        function createRocketChart(rocketsData) {
+            const ctx = document.getElementById('rocketChart').getContext('2d');
+            const rocketChart = new Chart(ctx, {
+                type: 'pie',
+                data: {
+                    labels: Object.keys(rocketsData),
+                    datasets: [
+                        {
+                            data: Object.values(rocketsData),
+                            backgroundColor: [
+                                'red', 'blue', 'green', 'yellow', 'purple', 'orange'
+                            ]
+                        }
+                    ]
+                }
+            });
+        }
+
+        function createSuccessRateChart(successfulCount, unsuccessfulCount) {
+            const ctx = document.getElementById('successRateChart').getContext('2d');
+            const successRateChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Successful', 'Unsuccessful'],
+                    datasets: [
+                        {
+                            data: [successfulCount, unsuccessfulCount],
+                            backgroundColor: ['green', 'red']
+                        }
+                    ]
+                }
+            });
+        }
+    </script>
+
+</body>
+</html>
